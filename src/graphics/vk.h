@@ -29,6 +29,8 @@
 #include <array>
 #define GLFW_INCLUDE_VULKAN
 #include <glfw3.h>
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
 #include <glm/glm.hpp>
 #include <optional>
 #include <string>
@@ -89,9 +91,9 @@ struct vkVertex {
 };
 
 struct vkUniformBufferObject {
-    glm::mat4 model;
-    glm::mat4 view;
-    glm::mat4 proj;
+    alignas(16) glm::mat4 model;
+    alignas(16) glm::mat4 view;
+    alignas(16) glm::mat4 proj;
 };
 
 void vkResize(GLFWwindow *, int, int);
@@ -107,6 +109,8 @@ public:
     void displayInfo();
 
 private:
+    void updateUniformBuffer(uint32 currentImage);
+    
     void createInstance();
     void initDebug();
     void createSurface();
@@ -129,6 +133,9 @@ private:
 
     void createVertexBuffer();
     void createIndexBuffer();
+    void createUniformBuffers();
+    void createDescriptorPool();
+    void createDescriptorSets();
     void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory);
     void copyBuffer(VkBuffer src, VkBuffer dst, VkDeviceSize size);
 
@@ -178,6 +185,11 @@ private:
     VkDeviceMemory _vertexBufferMemory;
     VkBuffer _indexBuffer;
     VkDeviceMemory _indexBufferMemory;
+    VkDescriptorPool _descriptorPool;
+    std::vector<VkDescriptorSet> _descriptorSets;
+    
+    std::vector<VkBuffer> _uniformBuffers;
+    std::vector<VkDeviceMemory> _uniformBuffersMemory;
 
     std::vector<vkVertex> _verts;
     std::vector<uint16> _indices;
