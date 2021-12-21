@@ -17,7 +17,13 @@ include_directories(src)
 include_directories(${PROJECT_SOURCE_DIR}/inc)
 link_directories(${PROJECT_SOURCE_DIR}/lib)
 
-add_executable(tera main.cpp)
+add_executable(tera
+        main.cpp
+        src/graphics/vk.cpp
+        src/graphics/vk.h
+        src/config.h
+        src/vec.h
+        src/world/block.cpp src/world/block.hpp)
 
 target_link_libraries(tera vulkan-1)
 target_link_libraries(tera glfw3)
